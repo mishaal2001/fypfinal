@@ -19,7 +19,7 @@ train_time_series_data = 38400
 #drive.mount('/content/drive')
 
 # Load the audio files and extract features
-audio_dir = "C:\\21st-july-2023\\fypfinall\\AllAudio"
+audio_dir = "AllAudio"
 audio_files = os.listdir(audio_dir)
 audio_features = []
 for file in audio_files:
