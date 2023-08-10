@@ -37,7 +37,7 @@ audio_features = np.array(audio_features)
 input_data = np.transpose(np.expand_dims(log_spectrogram, axis=0), (0, 2, 1, 3))
 
 # Load the stuttering labels
-labels = pd.read_csv("C:\\21st-july-2023\\fypfinall\\fyplabels.csv")
+labels = pd.read_csv("fyplabels.csv")
 
 # Split the data into training and testing sets
 train_data, test_data, train_labels, test_labels = train_test_split(audio_features, labels, test_size=0.3, random_state=0)
