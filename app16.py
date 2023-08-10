@@ -86,6 +86,7 @@ import traceback
 from pydub import AudioSegment
 from pydub.playback import play
 from collections import defaultdict
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -204,9 +205,6 @@ def determine_stuttering_level(audio_file_path):
 
     return stuttering_level
 
-
-
-
 @app.route('/')
 def home():
     global current_level
@@ -215,23 +213,10 @@ def home():
     else:
         example_sentence = example_sentences[current_level - 1]
 
-    html_code = f'''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Level {current_level}</title>
-    </head>
-    <body>
-        <h1>Level {current_level}</h1>
-        <h2>Please read the following sentence: '{example_sentence}'</h2>
-        <form action="/record-audio" method="POST">
-            <input type="submit" value="Start Recording">
-        </form>
-    </body>
-    </html>
-    '''
+    return render_template('level.html', level=current_level, example_sentence=example_sentence)
 
-    return html_code
+
+
 
 
 # Define a route for recording audio
