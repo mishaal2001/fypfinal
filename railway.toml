@@ -1,0 +1,2 @@
+[build]
+command = "python -m flask run"  # Replace with the command to start your Flask app
