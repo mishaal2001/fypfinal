@@ -9,6 +9,9 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, LSTM, 
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
+import os
+print("LD_LIBRARY_PATH:", os.environ.get("LD_LIBRARY_PATH"))
+
 # Define the input shape of the audio data
 input_shape = (431, 128, 1)  # because n_mels = 128
 max_time_steps = 431  # originally 300
