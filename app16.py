@@ -1,3 +1,5 @@
+import ctypes
+ctypes.CDLL('libsndfile.so')
 
 import os
 import pickle
@@ -11,6 +13,7 @@ import pandas as pd
 
 import os
 print("LD_LIBRARY_PATH:", os.environ.get("LD_LIBRARY_PATH"))
+
 
 # Define the input shape of the audio data
 input_shape = (431, 128, 1)  # because n_mels = 128
