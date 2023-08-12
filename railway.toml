@@ -1,2 +1,2 @@
 [build]
-command = "python -m flask run"  # Replace with the command to start your Flask app
+command = "python app16.py"  # Replace with your main Python file
