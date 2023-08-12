@@ -1,3 +1,5 @@
 [build]
 command = "python app16.py"  # Replace with your main Python file
 packages = ["libsndfile1", "libsndfile-dev"] 
+[env]
+LD_LIBRARY_PATH = "/path/to/libsndfile/library"
