@@ -9,8 +9,9 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, LSTM, Input
 from sklearn.model_selection import train_test_split
 import pandas as pd
-import ctypes
-ctypes.CDLL('libsndfile.so')
+import ctypes.util
+ctypes.util.find_library('sndfile')
+
 import os
 print("LD_LIBRARY_PATH:", os.environ.get("LD_LIBRARY_PATH"))
 
