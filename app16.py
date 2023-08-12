@@ -1,4 +1,4 @@
-
+import verify_libsndfile
 
 import os
 import pickle
