@@ -10,7 +10,12 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, LSTM, 
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import ctypes.util
-ctypes.util.find_library('sndfile')
+
+import ctypes
+
+# Load the libsndfile.dll library
+libsndfile = ctypes.CDLL('./libs/libsndfile.dll')  # Provide the correct path
+
 
 import os
 print("LD_LIBRARY_PATH:", os.environ.get("LD_LIBRARY_PATH"))
