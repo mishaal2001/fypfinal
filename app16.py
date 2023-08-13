@@ -14,7 +14,7 @@ import ctypes.util
 import ctypes
 
 # Load the libsndfile.dll library
-libsndfile = ctypes.CDLL('./libs/libsndfile.dll')  # Provide the correct path
+libsndfile = ctypes.CDLL('./libsndfile/bin/sndfile.dll')  # Provide the correct path
 
 
 import os
