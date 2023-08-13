@@ -21,6 +21,9 @@ COPY app16.py .
 # Copy any additional files or directories your application requires
 COPY AllAudio /app/AllAudio
 
+COPY fyplabels.csv /app/fyplabels.csv
+
+
 # Copy any other dependencies or configuration files
 
 # Install Python dependencies
