@@ -10,6 +10,15 @@ RUN apt-get update && apt-get install -y libsndfile1
 RUN apt-get update && \
     apt-get install -y libportaudio2
 
+# Install ffmpeg
+RUN apt-get update && \
+    apt-get install -y ffmpeg
+
+# Install espeak and its dependencies
+RUN apt-get update && \
+    apt-get install -y libespeak1
+
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
