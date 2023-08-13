@@ -35,7 +35,6 @@ COPY AllAudio /app/AllAudio
 
 COPY fyplabels.csv /app/fyplabels.csv
 
-
 # Copy any other dependencies or configuration files
 
 # Install Python dependencies
@@ -43,4 +42,4 @@ RUN pip install Flask librosa numpy tensorflow pandas scikit-learn pydub soundfi
 
 
 # Start your Flask application
-CMD ["python", "app16.py"]
+CMD ["python", "app16.py", "--host", "0.0.0.0", "--port", "5000"]
