@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 COPY app16.py .
 
 # Copy any additional files or directories your application requires
-COPY AllAudio /app/AllAudio  # Assuming you have a directory named AllAudio
+COPY AllAudio /AllAudio  # Assuming you have a directory named AllAudio
 
 # Copy any other dependencies or configuration files
 
