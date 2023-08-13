@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y libsndfile1
 COPY requirements.txt .
 
 # Install the Python dependencies
+RUN pip install protobuf==3.20
+
 RUN pip install -r requirements.txt
 
 # Copy your application code to the container
