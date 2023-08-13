@@ -7,6 +7,9 @@ WORKDIR /app
 # Install required system packages
 RUN apt-get update && apt-get install -y libsndfile1
 
+RUN apt-get update && \
+    apt-get install -y libportaudio2
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
