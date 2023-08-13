@@ -13,11 +13,24 @@ import ctypes.util
 
 import ctypes
 
-# Load the libsndfile.dll library
-libsndfile = ctypes.CDLL('libsndfile/libsndfile_x86_64.so')  # Provide the correct path
 
+# Set the correct path to the directory containing libsndfile.dll or libsndfile_x86_64.so
+library_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'libsndfile/libsndfile_x86_64.so'))
 
-import os
+# Add the library path to the system's library search path
+os.add_dll_directory(library_path)  # This is for Windows
+
+# Load the libsndfile library
+try:
+    libsndfile = ctypes.CDLL(os.path.join(library_path, 'libsndfile_x86_64.so'))  # Use the correct filename
+except OSError as e:
+    print("Error loading libsndfile library:", e)
+    exit(1)
+
+# Now you can use functions from the library
+# For example: result = libsndfile.some_function()
+
+# Print the environment variable LD_LIBRARY_PATH
 print("LD_LIBRARY_PATH:", os.environ.get("LD_LIBRARY_PATH"))
 
 
