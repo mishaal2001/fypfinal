@@ -95,21 +95,86 @@ from pydub.playback import play
 from collections import defaultdict
 from flask import render_template
 
+
+
 app = Flask(__name__)
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
 engine = pyttsx3.init()
 
+# Global variables for levels and example sentences
+levels = 7
+current_level = 1
+example_sentences = [
+    "the quick brown fox jumps over the lazy dog",
+    "she sells seashells by the seashore",
+    "the committee will meet next tuesday to discuss the new proposal",
+    "the constitutional right to freedom of speech is protected by law",
+    "how much wood would a woodchuck chuck if a woodchuck could chuck wood",
+    "peter piper picked a peck of pickled peppers",
+    "the mississippi river stretches from minnesota to louisiana"
+]
+
+# Specify the path to the ffmpeg executable
+#pydub.AudioSegment.ffmpeg = "C:\\ffmpeg\\ffmpeg\\bin\\ffmpeg.exe"  # Update with the correct path
+#pydub.AudioSegment.converter = "C:\\sox\\sox.exe"  # Update with the correct path to sox
 
 
 
 
+# Helper function to create HTML with red underline for unmatched words
+def highlight_unmatched_words(example_sentence, recorded_text):
+    example_words = example_sentence.split()
+    recorded_words = recorded_text.split()
+    html_code = '<br><h1>Recorded Text</h1><p>'
+
+    for example_word, recorded_word in zip(example_words, recorded_words):
+        if example_word == recorded_word:
+            html_code += recorded_word + ' '
+        else:
+            html_code += f'<span style="text-decoration: underline red;">{recorded_word}</span> '
+
+    html_code += '</p>'
+    return html_code
+
+from difflib import get_close_matches
+
+# Helper function to find closest pronunciation match for a word
+def get_pronunciation_suggestion(word):
+    # Replace this with your pronunciation dictionary or API call for pronunciation suggestions
+    # For now, we will use a dummy list with similar-sounding words
+    pronunciation_dict = {
+        "fox": ["foks", "fucks", "foksie", "foal", "fooox"],
+        "jumps": ["jamps", "jumpsy", "jumpsie"],
+        "dog": ["dawg", "doggie", "doggy", "d-d-d-o-g"],
+        "she": ["shi", "shii", "shay"],
+        "mississippi" : ["missing", "missippi", "missypi", "messysippi"],
+        "the" : ["tha", "thu", "da", "they"],
+        "quick" : ["kick", "quit", "quwick", "wick", "qick" "qui", "quuuick", "coil", "quill", "full"],
+        "brown" : ["bown", "brow", "braun", "braawn", "rouwn", "frown"],
+        "over" : ["ove", "owar", "ova", "overrr"],
+        "lazy" : ["lady", "laze", "lizi", "lazii", "laasy", "lacy", "lucy"],
+        "sells" : ["sails", "sales", "salls", "sellz","sell"],
+        "seashells" : ["t-shirts","shesells", "sheshells", "seasells", "seashell"],
+        "on" : ["one", "ooon", "onnn","oh", "ow"],
+        "seashore" : ["sheshore", "seasore", "shesore", "shore", "sea", "she", "sure", "seaaashurrr"],
+        "committee" : ["commit", "kitty" "cooomittee", "mittee", "commmmittee"],
+        "will": ["well", "wail", "whale", "wing", "fill", "wwwill", "wheel","veil", "wall"],
+        "meet": ["beat", "feet", "neat", "lead", "might", "myth", "met", "meek"],
+        "next": ["nice", "nest", "egss", "naps", "nats", "nacks", "legs"],
+        "tuesday": ["tweezday", "twosday", "teesday", "today", "wednesday", "thursday"],
+        "to": ["do", "you", "top", "sew", "so", "new"],
+        "discuss": ["curse", "diss", "cuss", "biscuit", "viscous", "ruckus", "daycuss"],
+        "new" : ["sew", "few", "knee", "dew", "no", "ew"]
+
+        # Add more words and their pronunciation suggestions as needed
+    }
+    return get_close_matches(word, pronunciation_dict.keys(), n=1)
 
 
+# Define the Flask app
 app = Flask(__name__)
-
-
 
 
 
@@ -140,6 +205,31 @@ def determine_stuttering_level(audio_file_path):
 
 
 
+@app.route('/')
+def home():
+    global current_level
+    if current_level > levels:
+        return "Congratulations! You have completed all levels."
+    else:
+        example_sentence = example_sentences[current_level - 1]
+
+    html_code = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Level {current_level}</title>
+    </head>
+    <body>
+        <h1>Level {current_level}</h1>
+        <h2>Please read the following sentence: '{example_sentence}'</h2>
+        <form action="/record-audio" method="POST">
+            <input type="submit" value="Start Recording">
+        </form>
+    </body>
+    </html>
+    '''
+
+    return html_code
 
 
 # Define a route for recording audio
@@ -235,7 +325,6 @@ def record_audio():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
-
 
 
 
