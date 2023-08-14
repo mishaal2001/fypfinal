@@ -253,6 +253,10 @@ def home():
 
     return html_code
 
+print(request.headers)
+print(request.form)
+print(request.files)
+
 @app.route('/save-audio', methods=['POST'])
 def save_audio():
     try:
