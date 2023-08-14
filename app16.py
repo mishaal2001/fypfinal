@@ -96,6 +96,20 @@ from collections import defaultdict
 from flask import render_template
 
 
+import sounddevice as sd
+
+# Define a route for listing audio devices
+@app.route('/list-audio-devices', methods=['GET'])
+def list_audio_devices():
+    devices = sd.query_devices()
+    device_list = []
+    for i, device in enumerate(devices):
+        device_list.append({
+            'index': i,
+            'name': device['name']
+        })
+    return jsonify(device_list), 200
+
 
 app = Flask(__name__)
 
