@@ -195,9 +195,10 @@ app = Flask(__name__)
 
 # Define a route for the home page
 
-def determine_stuttering_level(audio_file_path):
+def determine_stuttering_level(recorded_audio_data):
     # Load the audio file and extract features
-    audio_data, sr = librosa.load(audio_file_path, sr=22050, mono=True, duration=10)
+    audio_data = np.frombuffer(recorded_audio_data, dtype=np.int16)
+    sr = 44100  # Set the sample rate to match the recording sample rate
     spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sr, n_mels=num_features)
     log_spectrogram = librosa.power_to_db(spectrogram)
     log_spectrogram = np.expand_dims(log_spectrogram, axis=-1)
@@ -254,11 +255,12 @@ def home():
 def record_audio():
     global current_level
     try:
-        recorded_text = request.data.decode('utf-8')
+        recorded_audio_data = request.data  # Recorded audio data
 
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
         example_words = example_sentence.split()
+        recorded_text = recognizer.recognize_google(recorded_audio_data)
         recorded_words = recorded_text.split()
 
         html_code = '<br><h1>Recorded Text</h1><p>'
@@ -277,8 +279,8 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
-        # Determine the stuttering level directly using the recorded_text
-        stuttering_level = determine_stuttering_level(recorded_text)
+        # Determine the stuttering level using the recorded audio data
+        stuttering_level = determine_stuttering_level(recorded_audio_data)
 
 
     except Exception as e:
