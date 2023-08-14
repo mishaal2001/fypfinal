@@ -108,6 +108,10 @@ app = Flask(__name__)
 recognizer = sr.Recognizer()
 engine = pyttsx3.init()
 
+@app.route('/level')
+def level():
+    return render_template('level.html', level=current_level, example_sentence=example_sentence)
+
 # Global variables for levels and example sentences
 levels = 7
 current_level = 1
