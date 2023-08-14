@@ -254,20 +254,24 @@ def home():
 
     return html_code
 
+@app.route('/save-audio', methods=['POST'])
+def save_audio():
+    try:
+        audio_data = request.data
+        with open('recorded_audio.wav', 'wb') as f:
+            f.write(audio_data)
+        return 'Audio saved successfully'
+    except Exception as e:
+        return f'Error: {str(e)}', 500
 
 # Define a route for recording audio
 @app.route('/record-audio', methods=['POST'])
 def record_audio():
     global current_level
     try:
-        recorded_audio_data = request.data 
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
-            temp_audio_file.write(recorded_audio_data)
-            temp_audio_file_path = temp_audio_file.name
+        
+        recorded_audio_data = request.files['audio'].read()
 
-        # Perform speech recognition using pocketsphinx
-        speech = LiveSpeech(audio_file=temp_audio_file_path)
-        recorded_text = " ".join([str(h) for h in speech])
 
         # Recognize the speech from the audio
         recorded_text = recognizer.recognize_google(audio_data)
@@ -336,8 +340,8 @@ def record_audio():
             </html>
         '''
 
-        return html_code, 200
-        os.remove(temp_audio_file_path)
+        return "Audio recorded and processed successfully.", 200
+       
         
     except Exception as e:
         traceback.print_exc()
