@@ -20,6 +20,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from collections import defaultdict
 import tempfile
+import io
 
 app = Flask(__name__)
 
@@ -84,6 +85,7 @@ model.fit([train_data, np.random.rand(train_data.shape[0], max_time_steps, num_f
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
+
 engine = pyttsx3.init()
 
 
@@ -219,15 +221,10 @@ def record_audio():
         recorded_audio_data = request.files['audio'].read()
         print('Received audio data from client:', recorded_audio_data[:50])  # Print the first 50 bytes of audio data
 
-        # Recognize the speech from the audio
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
-            temp_audio_file_path = temp_audio_file.name
-            recorded_audio_file.save(temp_audio_file_path)
-
-            with sr.AudioFile(temp_audio_file_path) as source:
-                recorded_audio_data = recognizer.record(source)
-
-        recorded_text = recognizer.recognize_google(recorded_audio_data)
+        # Recognize the speech from the audio data
+        with sr.AudioFile(io.BytesIO(recorded_audio_data)) as source:
+            audio = recognizer.record(source)
+            recorded_text = recognizer.recognize_google(audio)
 
         html_code = '<br><h1>Recorded Text</h1><p>'
 
