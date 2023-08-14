@@ -21,6 +21,7 @@ from pydub.playback import play
 from collections import defaultdict
 import tempfile
 import io
+import io.BytesIO
 
 app = Flask(__name__)
 
@@ -212,7 +213,6 @@ def home():
     return html_code
 
 
-
 # Define a route for recording audio
 @app.route('/record-audio', methods=['POST'])
 def record_audio():
@@ -225,6 +225,10 @@ def record_audio():
         with sr.AudioFile(io.BytesIO(recorded_audio_data)) as source:
             audio = recognizer.record(source)
             recorded_text = recognizer.recognize_google(audio)
+
+        # Split example sentence and recorded text into words
+        example_words = example_sentences[current_level - 1].split()
+        recorded_words = recorded_text.split()
 
         html_code = '<br><h1>Recorded Text</h1><p>'
 
@@ -286,14 +290,10 @@ def record_audio():
         '''
 
         return html_code, 200
-       
-        
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
-
-
-
 
 
 if __name__ == '__main__':
