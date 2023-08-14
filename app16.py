@@ -196,13 +196,17 @@ app = Flask(__name__)
 # Define a route for the home page
 
 def determine_stuttering_level(recorded_audio_data):
-    # Load the audio file and extract features
-    audio_data = np.frombuffer(recorded_audio_data, dtype=np.int16)
-    sr = 44100  # Set the sample rate to match the recording sample rate
-    spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=sr, n_mels=num_features)
+    # Convert the recorded audio data to numpy array
+    audio_data = np.frombuffer(recorded_audio_data, dtype=np.float32)
+
+    # Resample the audio data to the desired sample rate
+    target_sr = 22050  # Choose your desired sample rate
+    audio_data_resampled = librosa.resample(audio_data, orig_sr=44100, target_sr=target_sr)
+
+    # Extract features from the resampled audio data
+    spectrogram = librosa.feature.melspectrogram(y=audio_data_resampled, sr=target_sr, n_mels=num_features)
     log_spectrogram = librosa.power_to_db(spectrogram)
     log_spectrogram = np.expand_dims(log_spectrogram, axis=-1)
-
     # Reshape the input data to match the expected input shape
     input_data = np.transpose(np.expand_dims(log_spectrogram, axis=0), (0, 2, 1, 3))
     input_data = np.pad(input_data, ((0, 0), (0, max_time_steps - input_data.shape[1]), (0, 0), (0, 0)), mode='constant')
@@ -255,7 +259,7 @@ def home():
 def record_audio():
     global current_level
     try:
-        recorded_audio_data = request.data  # Recorded audio data
+       recorded_audio_data = request.data 
 
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
