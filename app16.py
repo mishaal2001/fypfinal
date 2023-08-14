@@ -297,9 +297,6 @@ def record_audio():
 
 
 
-# Initialize the speech recognition engine
-recognizer = sr.Recognizer()
-
 
 
 if __name__ == '__main__':
