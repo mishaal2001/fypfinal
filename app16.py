@@ -95,25 +95,37 @@ from pydub.playback import play
 from collections import defaultdict
 from flask import render_template
 
+from flask import Flask, request, jsonify, render_template
 
+from pydub import AudioSegment
+from pydub.playback import play
+from collections import defaultdict
 
 
 
 app = Flask(__name__)
 
-import sounddevice as sd
+# Define a route for processing audio data
+@app.route('/process-audio', methods=['POST'])
+def process_audio():
+    try:
+        # Get the received audio data
+        audio_data = request.data
+        # Perform any required audio processing or speech recognition here
 
-# Define a route for listing audio devices
-@app.route('/list-audio-devices', methods=['GET'])
-def list_audio_devices():
-    devices = sd.query_devices()
-    device_list = []
-    for i, device in enumerate(devices):
-        device_list.append({
-            'index': i,
-            'name': device['name']
-        })
-    return jsonify(device_list), 200
+        # For demonstration, print the length of the received audio data
+        audio_length = len(audio_data)
+        print(f"Received audio data length: {audio_length} bytes")
+
+        # Return a response if needed
+        return "Audio data received and processed", 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 400
+
+
+
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
@@ -221,6 +233,7 @@ def determine_stuttering_level(audio_file_path):
 
 
 
+# Define the home route
 @app.route('/')
 def home():
     global current_level
@@ -238,14 +251,63 @@ def home():
     <body>
         <h1>Level {current_level}</h1>
         <h2>Please read the following sentence: '{example_sentence}'</h2>
-        <form action="/record-audio" method="POST">
-            <input type="submit" value="Start Recording">
-        </form>
+        
+        <!-- Add the microphone recording UI -->
+        <button id="startRecording">Start Recording</button>
+        <button id="stopRecording" disabled>Stop Recording</button>
+        <div id="result"></div>
+        
+        <script>
+            const startButton = document.getElementById('startRecording');
+            const stopButton = document.getElementById('stopRecording');
+            const resultDiv = document.getElementById('result');
+            let mediaRecorder;
+            let recordedChunks = [];
+
+            // Function to start recording
+            async function startRecording() {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.controls = true;
+                    resultDiv.innerHTML = '';
+                    resultDiv.appendChild(audio);
+                    // Send the recorded audio data to the server
+                    fetch('/record-audio', {
+                        method: 'POST',
+                        body: audioBlob,
+                    });
+                };
+                mediaRecorder.start();
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            }
+
+            // Function to stop recording
+            function stopRecording() {
+                mediaRecorder.stop();
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+
+            startButton.addEventListener('click', startRecording);
+            stopButton.addEventListener('click', stopRecording);
+        </script>
+        
     </body>
     </html>
     '''
 
     return html_code
+
 
 
 # Define a route for recording audio
@@ -257,12 +319,12 @@ def record_audio():
         duration = 15  # Recording duration in seconds
         sample_rate = 44100  # Sample rate in Hz
 
-        # Start recording
-        audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
+        # Record audio from the user's microphone
+        audio_data, _ = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
         sd.wait()
 
         # Save the recorded audio to a WAV file
-        file_path = 'C:\\21st-july-2023\\fypfinall\\recorded_audio.wav'
+        file_path = 'recorded_audio.wav'
         sf.write(file_path, audio_data, sample_rate, 'PCM_16')
 
         # Perform speech recognition on the recorded audio
@@ -306,8 +368,8 @@ def record_audio():
                             <h2>Congratulations! Level {current_level - 1} completed.</h2>
                             <h1>Level {current_level}</h1>
                             <h2>Please read the following sentence: '{example_sentences[current_level - 1]}'</h2>
-                            <form action="/record-audio" method="POST">
-                                <input type="submit" value="Start Recording">
+                            <form action="/record-microphone" method="POST">
+                                <button type="submit">Start Recording</button>
                             </form>
                         '''
         else:
@@ -317,8 +379,8 @@ def record_audio():
                 html_code += f"<p>For '{mispronounced_word}', you may pronounce it like '{suggestion}'</p>"
             html_code += '''
                         <h2>Re-record Audio:</h2>
-                        <form action="/record-audio" method="POST">
-                            <input type="submit" value="Re-record">
+                        <form action="/record-microphone" method="POST">
+                            <button type="submit">Re-record</button>
                         </form>
                     '''
 
@@ -341,6 +403,10 @@ def record_audio():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
+
+
+# Initialize the speech recognition engine
+recognizer = sr.Recognizer()
 
 
 
