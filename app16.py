@@ -253,9 +253,7 @@ def home():
 
     return html_code
 
-print(request.headers)
-print(request.form)
-print(request.files)
+
 
 @app.route('/save-audio', methods=['POST'])
 def save_audio():
@@ -272,7 +270,9 @@ def save_audio():
 def record_audio():
     global current_level
     try:
-        
+        print(request.headers)
+        print(request.form)
+        print(request.files)
         recorded_audio_data = request.files['audio'].read()
 
 
