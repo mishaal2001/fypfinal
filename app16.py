@@ -12,7 +12,7 @@ import sounddevice as sd
 import soundfile as sf
 import difflib
 import re
-import speech_recognition as sr
+import speech_recognition as speech_rec
 import pyttsx3
 import subprocess
 import traceback
@@ -84,7 +84,7 @@ model.fit([train_data, np.random.rand(train_data.shape[0], max_time_steps, num_f
 
 
 # Initialize the speech recognition and text-to-speech engines
-recognizer = sr.Recognizer()
+recognizer = speech_rec.Recognizer()
 
 engine = pyttsx3.init()
 
