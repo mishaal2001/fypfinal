@@ -1,5 +1,3 @@
-#import verify_libsndfile
-
 import os
 import pickle
 import librosa
@@ -9,12 +7,21 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, LSTM, Input
 from sklearn.model_selection import train_test_split
 import pandas as pd
-import ctypes.util
-from flask import Flask, render_template, request
-import ctypes
+from flask import Flask, request, jsonify, render_template
+import sounddevice as sd
+import soundfile as sf
+import difflib
+import re
+import speech_recognition as sr
+import pyttsx3
+import subprocess
+import traceback
+from pydub import AudioSegment
+from pydub.playback import play
+from collections import defaultdict
+import tempfile
 
-
-
+app = Flask(__name__)
 
 # Define the input shape of the audio data
 input_shape = (431, 128, 1)  # because n_mels = 128
@@ -22,8 +29,6 @@ max_time_steps = 431  # originally 300
 num_features = 128
 train_time_series_data = 38400
 
-#from google.colab import drive
-#drive.mount('/content/drive')
 
 # Load the audio files and extract features
 audio_dir = "AllAudio"
@@ -37,8 +42,6 @@ for file in audio_files:
     log_spectrogram = np.expand_dims(log_spectrogram, axis=-1)
     audio_features.append(log_spectrogram)
 audio_features = np.array(audio_features)
-
-
 
 # Reshape the input data to match the expected input shape
 input_data = np.transpose(np.expand_dims(log_spectrogram, axis=0), (0, 2, 1, 3))
@@ -77,40 +80,12 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 model.fit([train_data, np.random.rand(train_data.shape[0], max_time_steps, num_features)], train_labels, epochs=2,
           batch_size=32, validation_split=0.3)
 
-#pickle.dump(model, open("model.pkl", "wb"))
-
-from flask import Flask, request, jsonify
-import sounddevice as sd
-import soundfile as sf
-import numpy as np
-import difflib
-import re
-import speech_recognition as sr
-import pyttsx3
-import pydub
-import subprocess
-import traceback
-from pydub import AudioSegment
-from pydub.playback import play
-from collections import defaultdict
-from flask import render_template
-import io
-from flask import Flask, request, jsonify, render_template
-import tempfile
-import os
-
-
-
-app = Flask(__name__)
 
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
 engine = pyttsx3.init()
 
-@app.route('/level')
-def level():
-    return render_template('level.html', level=current_level, example_sentence=example_sentence)
 
 # Global variables for levels and example sentences
 levels = 7
@@ -124,12 +99,6 @@ example_sentences = [
     "peter piper picked a peck of pickled peppers",
     "the mississippi river stretches from minnesota to louisiana"
 ]
-
-# Specify the path to the ffmpeg executable
-pydub.AudioSegment.ffmpeg = "C:\\ffmpeg\\ffmpeg\\bin\\ffmpeg.exe"  # Update with the correct path
-pydub.AudioSegment.converter = "C:\\sox\\sox.exe"  # Update with the correct path to sox
-
-
 
 
 # Helper function to create HTML with red underline for unmatched words
@@ -181,23 +150,6 @@ def get_pronunciation_suggestion(word):
     }
     return get_close_matches(word, pronunciation_dict.keys(), n=1)
 
-
-# Import the necessary libraries
-# ... (previous code remains the same)
-
-# Define the Flask app
-app = Flask(__name__)
-
-# Global variables for levels and example sentences
-# ... (previous code remains the same)
-
-# Define the input shape and other audio-related variables
-# ... (previous code remains the same)
-
-# Load the stuttering model
-# ... (previous code remains the same)
-
-# Define a route for the home page
 
 def determine_stuttering_level(recorded_audio_data):
     # Convert the recorded audio data to numpy array
