@@ -273,7 +273,7 @@ def record_audio():
 
 
         # Recognize the speech from the audio
-       recorded_text = recognizer.recognize_google(recorded_audio_data)
+        recorded_text = recognizer.recognize_google(recorded_audio_data)
 
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
