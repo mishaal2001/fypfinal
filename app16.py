@@ -259,19 +259,19 @@ def home():
 def record_audio():
     global current_level
     try:
-       recorded_audio_data = request.data 
-       #Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
-       example_sentence = example_sentences[current_level - 1]
-       example_words = example_sentence.split()
-       recorded_text = recognizer.recognize_google(recorded_audio_data)
-       recorded_words = recorded_text.split()
+        recorded_audio_data = request.data 
+        # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
+        example_sentence = example_sentences[current_level - 1]
+        example_words = example_sentence.split()
+        recorded_text = recognizer.recognize_google(recorded_audio_data)
+        recorded_words = recorded_text.split()
 
-       html_code = '<br><h1>Recorded Text</h1><p>'
+        html_code = '<br><h1>Recorded Text</h1><p>'
 
-       #Initialize mispronounced_words list
-       mispronounced_words = []
+        # Initialize mispronounced_words list
+        mispronounced_words = []
 
-       for example_word, recorded_word in zip(example_words, recorded_words):
+        for example_word, recorded_word in zip(example_words, recorded_words):
             if example_word == recorded_word:
                 html_code += recorded_word + ' '
             else:
@@ -282,14 +282,8 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
-       #Determine the stuttering level using the recorded audio data
-       stuttering_level = determine_stuttering_level(recorded_audio_data)
-
-
-     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 400
-
+        # Determine the stuttering level using the recorded audio data
+        stuttering_level = determine_stuttering_level(recorded_audio_data)
 
         if not mispronounced_words:
             # Move to the next level if there are no mispronounced words
@@ -298,44 +292,45 @@ def record_audio():
                 html_code += '<h2>Congratulations! You have completed all levels.</h2>'
             else:
                 html_code += f'''
-                            <h2>Congratulations! Level {current_level - 1} completed.</h2>
-                            <h1>Level {current_level}</h1>
-                            <h2>Please read the following sentence: '{example_sentences[current_level - 1]}'</h2>
-                            <form action="/record-audio" method="POST">
-                                <input type="submit" value="Start Recording">
-                            </form>
-                        '''
+                    <h2>Congratulations! Level {current_level - 1} completed.</h2>
+                    <h1>Level {current_level}</h1>
+                    <h2>Please read the following sentence: '{example_sentences[current_level - 1]}'</h2>
+                    <form action="/record-audio" method="POST">
+                        <input type="submit" value="Start Recording">
+                    </form>
+                '''
         else:
             # Display pronunciation suggestions and re-record option
             html_code += '<h2>Pronunciation Suggestions:</h2>'
             for mispronounced_word, suggestion in mispronounced_words:
                 html_code += f"<p>For '{mispronounced_word}', you may pronounce it like '{suggestion}'</p>"
             html_code += '''
-                        <h2>Re-record Audio:</h2>
-                        <form action="/record-audio" method="POST">
-                            <input type="submit" value="Re-record">
-                        </form>
-                    '''
+                <h2>Re-record Audio:</h2>
+                <form action="/record-audio" method="POST">
+                    <input type="submit" value="Re-record">
+                </form>
+            '''
 
         # Prepare the response HTML page
         html_code = f'''
-                              <!DOCTYPE html>
-                              <html>
-                              <head>
-                                  <title>Recorded Audio and Text</title>
-                              </head>
-                              <body>
-                              <h2>Stuttering Level: {stuttering_level}</h2>
-                                  {html_code}
-                              </body>
-                              </html>
-                              '''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Recorded Audio and Text</title>
+            </head>
+            <body>
+                <h2>Stuttering Level: {stuttering_level}</h2>
+                {html_code}
+            </body>
+            </html>
+        '''
 
         return html_code, 200
 
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
+
 
 
 # Initialize the speech recognition engine
