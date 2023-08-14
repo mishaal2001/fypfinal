@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, LSTM, 
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import ctypes.util
-
+rom flask import Flask, render_template, request
 import ctypes
 
 
