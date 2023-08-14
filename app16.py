@@ -94,7 +94,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from collections import defaultdict
 from flask import render_template
-
+import io
 from flask import Flask, request, jsonify, render_template
 
 
