@@ -98,11 +98,11 @@ import io
 from flask import Flask, request, jsonify, render_template
 import tempfile
 import os
-from flask_cors import CORS  # Import the CORS module
+
 
 
 app = Flask(__name__)
-CORS(app)
+
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
@@ -273,7 +273,8 @@ def record_audio():
 
 
         # Recognize the speech from the audio
-        recorded_text = recognizer.recognize_google(audio_data)
+       recorded_text = recognizer.recognize_google(recorded_audio_data)
+
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
         example_words = example_sentence.split()
