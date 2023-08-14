@@ -254,24 +254,7 @@ def home():
 def record_audio():
     global current_level
     try:
-        # Set the audio parameters
-        duration = 15  # Recording duration in seconds
-        sample_rate = 44100  # Sample rate in Hz
-
-        # Start recording
-        audio_data = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
-        sd.wait()
-
-        # Save the recorded audio to a WAV file
-        file_path = 'C:\\21st-july-2023\\fypfinall\\recorded_audio.wav'
-        sf.write(file_path, audio_data, sample_rate, 'PCM_16')
-
-        # Perform speech recognition on the recorded audio
-        with sr.AudioFile(file_path) as source:
-            audio_data = recognizer.record(source)
-
-        # Recognize the speech from the audio
-        recorded_text = recognizer.recognize_google(audio_data)
+        recorded_text = request.data.decode('utf-8')
 
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
