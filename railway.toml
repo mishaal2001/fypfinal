@@ -3,3 +3,7 @@ command = "python app16.py"  # Replace with your main Python file
 packages = ["libsndfile1", "libsndfile-dev"] 
 [env]
 LD_LIBRARY_PATH = "/path/to/libsndfile/library"
+
+[[deploy.routes]]
+src = "/list-audio-devices"
+dest = "http://127.0.0.1:5000/list-audio-devices"
