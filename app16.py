@@ -260,10 +260,16 @@ def record_audio():
     global current_level
     try:
         recorded_audio_data = request.data 
+        # Perform speech recognition on the recorded audio
+        with sr.AudioFile(recorded_audio_data) as source:
+            audio_data = recognizer.record(source)
+
+        # Recognize the speech from the audio
+        recorded_text = recognizer.recognize_google(audio_data)
         # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
         example_sentence = example_sentences[current_level - 1]
         example_words = example_sentence.split()
-        recorded_text = recognizer.recognize_google(recorded_audio_data)
+       
         recorded_words = recorded_text.split()
 
         html_code = '<br><h1>Recorded Text</h1><p>'
