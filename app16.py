@@ -98,12 +98,11 @@ import io
 from flask import Flask, request, jsonify, render_template
 import tempfile
 import os
-from pocketsphinx import LiveSpeech
+from flask_cors import CORS  # Import the CORS module
 
 
 app = Flask(__name__)
-
-app = Flask(__name__)
+CORS(app)
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
