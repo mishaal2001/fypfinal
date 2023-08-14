@@ -264,15 +264,23 @@ def home():
 def record_audio():
     global current_level
     try:
-        recorded_audio_data = request.files['audio'].read()
-        # Recognize the speech from the audio
-        recorded_text = recognizer.recognize_google(recorded_audio_data)
+        print(request.headers)  # Debugging: Print request headers
 
-        # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
-        example_sentence = example_sentences[current_level - 1]
-        example_words = example_sentence.split()
-       
-        recorded_words = recorded_text.split()
+        # Make sure the field name ('audio') matches the one used in the FormData object
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+
+        recorded_audio_file = request.files['audio']
+
+        # Recognize the speech from the audio
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
+            temp_audio_file_path = temp_audio_file.name
+            recorded_audio_file.save(temp_audio_file_path)
+
+            with sr.AudioFile(temp_audio_file_path) as source:
+                recorded_audio_data = recognizer.record(source)
+
+        recorded_text = recognizer.recognize_google(recorded_audio_data)
 
         html_code = '<br><h1>Recorded Text</h1><p>'
 
