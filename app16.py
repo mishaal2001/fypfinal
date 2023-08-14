@@ -255,27 +255,12 @@ def home():
 
 
 
-@app.route('/save-audio', methods=['POST'])
-def save_audio():
-    try:
-        audio_data = request.data
-        with open('recorded_audio.wav', 'wb') as f:
-            f.write(audio_data)
-        return 'Audio saved successfully'
-    except Exception as e:
-        return f'Error: {str(e)}', 500
-
 # Define a route for recording audio
 @app.route('/record-audio', methods=['POST'])
 def record_audio():
     global current_level
     try:
-        print(request.headers)
-        print(request.form)
-        print(request.files)
         recorded_audio_data = request.files['audio'].read()
-
-
         # Recognize the speech from the audio
         recorded_text = recognizer.recognize_google(recorded_audio_data)
 
@@ -344,7 +329,7 @@ def record_audio():
             </html>
         '''
 
-        return "Audio recorded and processed successfully.", 200
+        return html_code, 200
        
         
     except Exception as e:
