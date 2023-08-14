@@ -98,7 +98,7 @@ import io
 from flask import Flask, request, jsonify, render_template
 import tempfile
 import os
-
+from pocketsphinx import LiveSpeech
 
 
 app = Flask(__name__)
@@ -265,9 +265,9 @@ def record_audio():
             temp_audio_file.write(recorded_audio_data)
             temp_audio_file_path = temp_audio_file.name
 
-        # Perform speech recognition on the recorded audio
-        with sr.AudioFile(temp_audio_file_path) as source:
-            audio_data = recognizer.record(source)
+        # Perform speech recognition using pocketsphinx
+        speech = LiveSpeech(audio_file=temp_audio_file_path)
+        recorded_text = " ".join([str(h) for h in speech])
 
         # Recognize the speech from the audio
         recorded_text = recognizer.recognize_google(audio_data)
