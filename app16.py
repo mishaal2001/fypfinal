@@ -260,6 +260,8 @@ def record_audio():
     global current_level
     try:
         recorded_audio_data = request.data 
+        audio_file = io.BytesIO(recorded_audio_data)
+
         # Perform speech recognition on the recorded audio
         with sr.AudioFile(recorded_audio_data) as source:
             audio_data = recognizer.record(source)
