@@ -16,6 +16,8 @@
         let mediaRecorder;
         let recordedChunks = [];
 
+        
+
         // Function to start recording
         async function startRecording() {
             try {
@@ -33,27 +35,38 @@
 
                     // Send the recorded audio data to the server
                     try {
-                        const response = await fetch('/record-audio', {
-                            method: 'POST',
-                            body: formData,
-                        });
+    console.log('Sending audio data to server:', audioBlob);
+    const response = await fetch('/record-audio', {
+        method: 'POST',
+        body: formData,
+    });
+                         if (response.ok) {
+        const result = await response.text();
+        resultDiv.innerHTML = result;
+    } else {
+        console.error('Failed to send audio data to server.');
+    }
 
-                        if (response.ok) {
-                            const result = await response.text();
-                            resultDiv.innerHTML = result;
-                        } else {
-                            console.error('Failed to send audio data to server.');
-                        }
-                    } catch (error) {
-                        console.error('Error sending audio data:', error);
-                    }
-                };
-                mediaRecorder.start();
-                startButton.disabled = true;
-            } catch (error) {
-                console.error('Error starting recording:', error);
-            }
-        }
+                        } catch (error) {
+    console.error('Error sending audio data:', error);
+}
+                   // Send the recorded audio data to the server
+try {
+    const response = await fetch('/record-audio', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (response.ok) {
+        const result = await response.text();
+        resultDiv.innerHTML = result;
+    } else {
+        console.error('Failed to send audio data to server.');
+    }
+} catch (error) {
+    console.error('Error sending audio data:', error);
+}
+
 
         startButton.addEventListener('click', startRecording);
     </script>
