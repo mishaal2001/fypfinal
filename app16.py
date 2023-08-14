@@ -264,13 +264,8 @@ def home():
 def record_audio():
     global current_level
     try:
-        print(request.headers)  # Debugging: Print request headers
-
-        # Make sure the field name ('audio') matches the one used in the FormData object
-        if 'audio' not in request.files:
-            return jsonify({'error': 'No audio file provided'}), 400
-
-        recorded_audio_file = request.files['audio']
+        recorded_audio_data = request.files['audio'].read()
+        print('Received audio data from client:', recorded_audio_data[:50])  # Print the first 50 bytes of audio data
 
         # Recognize the speech from the audio
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
