@@ -277,6 +277,9 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
+        # Store the audio recording in the file_path variable
+        file_path = recorded_text
+        
         # Determine the stuttering level
         stuttering_level = determine_stuttering_level(file_path)
 
