@@ -96,7 +96,8 @@ from collections import defaultdict
 from flask import render_template
 import io
 from flask import Flask, request, jsonify, render_template
-
+import tempfile
+import os
 
 
 
@@ -260,10 +261,12 @@ def record_audio():
     global current_level
     try:
         recorded_audio_data = request.data 
-        audio_file = io.BytesIO(recorded_audio_data)
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
+            temp_audio_file.write(recorded_audio_data)
+            temp_audio_file_path = temp_audio_file.name
 
         # Perform speech recognition on the recorded audio
-        with sr.AudioFile(recorded_audio_data) as source:
+        with sr.AudioFile(temp_audio_file_path) as source:
             audio_data = recognizer.record(source)
 
         # Recognize the speech from the audio
@@ -334,7 +337,8 @@ def record_audio():
         '''
 
         return html_code, 200
-
+        os.remove(temp_audio_file_path)
+        
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
