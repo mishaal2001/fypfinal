@@ -277,11 +277,14 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
-        # Store the audio recording in the file_path variable
-        file_path = recorded_text
-        
-        # Determine the stuttering level
-        stuttering_level = determine_stuttering_level(file_path)
+        # Determine the stuttering level directly using the recorded_text
+        stuttering_level = determine_stuttering_level(recorded_text)
+
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 400
+
 
         if not mispronounced_words:
             # Move to the next level if there are no mispronounced words
