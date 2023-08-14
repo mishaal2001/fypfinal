@@ -232,7 +232,6 @@ def determine_stuttering_level(audio_file_path):
 
 
 
-
 # Define the home route
 @app.route('/')
 def home():
@@ -307,7 +306,6 @@ def home():
     '''
 
     return html_code
-
 
 
 # Define a route for recording audio
