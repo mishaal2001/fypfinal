@@ -282,7 +282,7 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
-       Determine the stuttering level using the recorded audio data
+       #Determine the stuttering level using the recorded audio data
        stuttering_level = determine_stuttering_level(recorded_audio_data)
 
 
