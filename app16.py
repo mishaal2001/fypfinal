@@ -96,6 +96,11 @@ from collections import defaultdict
 from flask import render_template
 
 
+
+
+
+app = Flask(__name__)
+
 import sounddevice as sd
 
 # Define a route for listing audio devices
@@ -109,9 +114,6 @@ def list_audio_devices():
             'name': device['name']
         })
     return jsonify(device_list), 200
-
-
-app = Flask(__name__)
 
 # Initialize the speech recognition and text-to-speech engines
 recognizer = sr.Recognizer()
