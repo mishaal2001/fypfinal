@@ -251,55 +251,55 @@ def home():
         <h1>Level {current_level}</h1>
         <h2>Please read the following sentence: '{example_sentence}'</h2>
         
-        <!-- Add the microphone recording UI -->
-        <button id="startRecording">Start Recording</button>
-        <button id="stopRecording" disabled>Stop Recording</button>
-        <div id="result"></div>
-        
-        <script>
-            const startButton = document.getElementById('startRecording');
-            const stopButton = document.getElementById('stopRecording');
-            const resultDiv = document.getElementById('result');
-            let mediaRecorder;
-            let recordedChunks = [];
+       // Add the microphone recording UI
+<button id="startRecording">Start Recording</button>
+<button id="stopRecording" disabled>Stop Recording</button>
+<div id="result"></div>
 
-            // Function to start recording
-            async function startRecording() {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) {
-                        recordedChunks.push(event.data);
-                    }
-                };
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    audio.controls = true;
-                    resultDiv.innerHTML = '';
-                    resultDiv.appendChild(audio);
-                    // Send the recorded audio data to the server
-                    fetch('/record-audio', {
-                        method: 'POST',
-                        body: audioBlob,
-                    });
-                };
-                mediaRecorder.start();
-                startButton.disabled = true;
-                stopButton.disabled = false;
+<script>
+    const startButton = document.getElementById('startRecording');
+    const stopButton = document.getElementById('stopRecording');
+    const resultDiv = document.getElementById('result');
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    // Function to start recording
+    async function startRecording() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
             }
+        };
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            audio.controls = true;
+            resultDiv.innerHTML = '';
+            resultDiv.appendChild(audio);
+            // Send the recorded audio data to the server
+            fetch('/record-audio', {
+                method: 'POST',
+                body: audioBlob,
+            });
+        };
+        mediaRecorder.start();
+        startButton.disabled = true;
+        stopButton.disabled = false;
+    }
 
-            // Function to stop recording
-            function stopRecording() {
-                mediaRecorder.stop();
-                startButton.disabled = false;
-                stopButton.disabled = true;
-            }
+    // Function to stop recording
+    function stopRecording() {
+        mediaRecorder.stop();
+        startButton.disabled = false;
+        stopButton.disabled = true;
+    }
 
-            startButton.addEventListener('click', startRecording);
-            stopButton.addEventListener('click', stopRecording);
-        </script>
+    startButton.addEventListener('click', startRecording);
+    stopButton.addEventListener('click', stopRecording);
+</script>
         
     </body>
     </html>
