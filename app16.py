@@ -260,19 +260,18 @@ def record_audio():
     global current_level
     try:
        recorded_audio_data = request.data 
+       #Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
+       example_sentence = example_sentences[current_level - 1]
+       example_words = example_sentence.split()
+       recorded_text = recognizer.recognize_google(recorded_audio_data)
+       recorded_words = recorded_text.split()
 
-        # Compare the recorded_text with the example_sentence and create HTML with red underline and pronunciation suggestions
-        example_sentence = example_sentences[current_level - 1]
-        example_words = example_sentence.split()
-        recorded_text = recognizer.recognize_google(recorded_audio_data)
-        recorded_words = recorded_text.split()
+       html_code = '<br><h1>Recorded Text</h1><p>'
 
-        html_code = '<br><h1>Recorded Text</h1><p>'
+       #Initialize mispronounced_words list
+       mispronounced_words = []
 
-        # Initialize mispronounced_words list
-        mispronounced_words = []
-
-        for example_word, recorded_word in zip(example_words, recorded_words):
+       for example_word, recorded_word in zip(example_words, recorded_words):
             if example_word == recorded_word:
                 html_code += recorded_word + ' '
             else:
@@ -283,11 +282,11 @@ def record_audio():
                 else:
                     html_code += recorded_word + ' '
 
-        # Determine the stuttering level using the recorded audio data
+        Determine the stuttering level using the recorded audio data
         stuttering_level = determine_stuttering_level(recorded_audio_data)
 
 
-    except Exception as e:
+      except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
 
